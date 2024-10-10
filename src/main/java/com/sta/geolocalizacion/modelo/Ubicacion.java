@@ -11,7 +11,7 @@ import lombok.*;
 
 @Entity @Getter @Setter
 @View(members = 
-    "datosGenerales [ fechaHora; nombre; direccion; ciudad; pais; ], "
+    "datosGenerales [ fechaHora;fingerprint; nombre; direccion; ciudad; pais; ], "
     + "ubicacion "
    
 )
@@ -22,6 +22,8 @@ public class Ubicacion extends Identifiable {
     @Column(length = 50)
     @Coordinates
     private String ubicacion; // Coordenadas en formato "latitud, longitud"
+	
+	private String fingerprint; // Para almacenar la huella digital del navegador
     
     
     private LocalDateTime fechaHora;

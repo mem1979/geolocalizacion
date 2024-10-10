@@ -1,11 +1,21 @@
+// Opciones de geolocalización
+const options = {
+    enableHighAccuracy: true, // Mejorar precisión
+    timeout: 5000,            // Tiempo máximo para obtener la ubicación
+    maximumAge: 0             // No usar ubicaciones almacenadas en caché
+};
+
+// Función para obtener la geolocalización
 function obtenerUbicacion() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError);
+        // Obtener la ubicación actual con las opciones avanzadas
+        navigator.geolocation.getCurrentPosition(mostrarPosicion, mostrarError, options);
     } else {
         alert("La geolocalización no es soportada por este navegador.");
     }
 }
 
+// Función para mostrar la posición obtenida
 function mostrarPosicion(position) {
     const latitud = position.coords.latitude;
     const longitud = position.coords.longitude;
@@ -21,13 +31,23 @@ function mostrarPosicion(position) {
         ubicacionInput.value = coordenadas;
 
         // Disparar el evento de cambio para actualizar la vista
-        var event = new Event('change');
+        const event = new Event('change');
         ubicacionInput.dispatchEvent(event);
+
+        // Mostrar detalles de precisión y coordenadas
+        console.log("Ubicación obtenida con éxito:");
+        console.log(`Latitud: ${latitud}`);
+        console.log(`Longitud: ${longitud}`);
+        console.log(`Precisión aproximada: ${position.coords.accuracy} metros.`);
     } else {
         console.error("No se encontró el campo de coordenadas 'ox_geolocalizacion_Ubicacion__ubicacion'");
     }
+
+    // Llamar a la función para obtener la huella digital después de la geolocalización
+    obtenerFingerprint();
 }
 
+// Función para mostrar los errores de geolocalización
 function mostrarError(error) {
     switch (error.code) {
         case error.PERMISSION_DENIED:
@@ -44,3 +64,35 @@ function mostrarError(error) {
             break;
     }
 }
+
+// Función para obtener la huella digital del navegador usando Fingerprint.js
+function obtenerFingerprint() {
+    // Inicializar Fingerprint.js
+    const fpPromise = FingerprintJS.load();
+
+    fpPromise
+        .then(fp => fp.get())
+        .then(result => {
+            const visitorId = result.visitorId;
+            console.log("Huella digital del visitante:", visitorId);
+
+            // Obtener el campo de huella digital en OpenXava
+            const fingerprintInput = document.getElementById("ox_geolocalizacion_Ubicacion__fingerprint");
+
+            // Verificar si el campo existe antes de asignarle el valor
+            if (fingerprintInput) {
+                fingerprintInput.value = visitorId;
+
+                // Disparar el evento de cambio para actualizar la vista
+                const event = new Event('change');
+                fingerprintInput.dispatchEvent(event);
+            } else {
+                console.error("No se encontró el campo de huella digital 'ox_geolocalizacion_Ubicacion__fingerprint'");
+            }
+        });
+}
+
+// Llamar a la función para obtener la ubicación y la huella digital al cargar la página
+window.onload = function() {
+    obtenerUbicacion();
+};
