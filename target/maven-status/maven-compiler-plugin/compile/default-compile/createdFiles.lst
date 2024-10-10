@@ -1,0 +1,3 @@
+com\sta\geolocalizacion\modelo\Ubicacion.class
+com\sta\geolocalizacion\acciones\ObtenerUbicacionAction.class
+com\sta\geolocalizacion\run\geolocalizacion.class
